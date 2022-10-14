@@ -15,6 +15,10 @@ export class CartService {
     return this.cartReposity.save(createCartDto);
   }
 
+  createWithoutDto(cart: Cart) {
+    this.cartReposity.save(cart);
+  }
+
   findAll() {
     return `This action returns all cart`;
   }

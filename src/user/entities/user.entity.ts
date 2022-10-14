@@ -1,6 +1,6 @@
-import { Cart } from 'src/cart/entities/cart.entity';
-import { Invoice } from 'src/invoice/entities/invoice.entity';
-import { Product } from 'src/product/entities/product.entity';
+import { Cart } from '../../cart/entities/cart.entity';
+import { Invoice } from '../../invoice/entities/invoice.entity';
+import { Product } from '../../product/entities/product.entity';
 import {
   Column,
   Entity,
@@ -32,9 +32,13 @@ export class User {
     enum: UserRole,
     default: UserRole.CUSTOMER,
   })
-  roles: UserRole;
+  role: UserRole;
 
-  @OneToOne(() => Cart)
+  @OneToOne(() => Cart, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn()
   cart: Cart;
 

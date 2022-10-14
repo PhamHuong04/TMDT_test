@@ -11,6 +11,9 @@ import { AuthHelper } from './auth.helper';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { forwardRef } from '@nestjs/common';
+import { CartService } from '../cart/cart.service';
+import { Cart } from '../cart/entities/cart.entity';
 
 @Injectable()
 export class UserService {
@@ -20,6 +23,9 @@ export class UserService {
 
     @Inject(AuthHelper)
     private readonly helper: AuthHelper,
+
+    @Inject(forwardRef(() => CartService))
+    private cartService: CartService,
   ) {}
 
   private logger = new Logger('UserService');
@@ -38,15 +44,15 @@ export class UserService {
       `New user in system with email is: ${createUserDto.email.toLowerCase()}`,
     );
     createUserDto.password = this.helper.encodePassword(createUserDto.password);
+    const cart = new Cart();
+    this.cartService.createWithoutDto(cart);
+    createUserDto.cart = cart;
+
     return this.userRepository.save(createUserDto);
   }
 
   async findAll() {
-    const users = await this.userRepository.findAndCount({});
-    if (!users) {
-      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
-    }
-    return users;
+    return await this.userRepository.find();
   }
 
   async findOne(id: number) {
@@ -63,7 +69,7 @@ export class UserService {
       throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
     }
     await this.userRepository.update({ id }, updateUserDto);
-    return `update successfully`;
+    return this.findOne(id);
   }
 
   async remove(id: number) {

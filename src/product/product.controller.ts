@@ -20,12 +20,17 @@ import { Product } from './entities/product.entity';
 
 @Controller('product')
 @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
-@CheckAbilities({ action: Action.MANAGE_PRODUCT, subject: Product })
+// @CheckAbilities({ action: Action.MANAGE_PRODUCT, subject: Product })
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
+    return this.productService.create(createProductDto);
+  }
+
+  @Post('add-product-to-cart')
+  addProductIntoCart(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 

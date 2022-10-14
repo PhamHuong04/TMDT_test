@@ -29,11 +29,10 @@ export class AbilityFactory {
       Ability as AbilityClass<AppAbility>,
     );
 
-    console.log(user.roles);
-    if (user.roles == 'admin') {
+    if (user.role == 'admin') {
       can(Action.MANAGE_PRODUCT, Product);
       can(Action.MANAGE_USER, UserEntity);
-    } else if (user.roles == 'seller') {
+    } else if (user.role == 'seller') {
       cannot(Action.MANAGE_USER, UserEntity).because(
         'You are not authorized to do this',
       );

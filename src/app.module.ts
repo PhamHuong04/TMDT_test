@@ -14,6 +14,7 @@ import { TypeOrmConfigSerivce } from './common/share/typeorm/typeorm.service';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { AbilityModule } from './ability/ability.module';
+import { ProductCartsCartModule } from './product_carts_cart/product_carts_cart.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AbilityModule } from './ability/ability.module';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigSerivce }),
     AuthModule,
     AbilityModule,
+    ProductCartsCartModule,
   ],
   controllers: [AppController],
   providers: [

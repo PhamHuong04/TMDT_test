@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Cart } from '../../cart/entities/cart.entity';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail()
@@ -8,4 +16,8 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @IsObject()
+  @IsOptional()
+  cart: Cart;
 }

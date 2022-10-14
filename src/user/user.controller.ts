@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,9 +17,9 @@ import { CheckAbilities } from 'src/ability/abilities.decorator';
 import { Action } from 'src/ability/ability.factory';
 import { User as UserEntity } from './entities/user.entity';
 
+@Controller('user')
 @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
 @CheckAbilities({ action: Action.MANAGE_USER, subject: UserEntity })
-@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -29,7 +28,7 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
-  @Get()
+  @Get('get-all-users')
   findAll() {
     return this.userService.findAll();
   }

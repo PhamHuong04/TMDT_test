@@ -7,7 +7,7 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Post()
+  @Post('create-new-cart')
   create(@Body() createCartDto: CreateCartDto) {
     return this.cartService.create(createCartDto);
   }

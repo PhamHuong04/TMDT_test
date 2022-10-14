@@ -8,12 +8,12 @@ export class TypeOrmConfigSerivce implements TypeOrmOptionsFactory {
   private readonly config: ConfigService;
   public createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: 'mysql',
-      host: this.config.get<string>('MYSQL_HOST', 'localhost'),
-      port: this.config.get<number>('MYSQL_PORT'),
-      username: this.config.get<string>('MYSQL_USERNAME'),
-      password: this.config.get<string>('MYSQL_PASSWORD'),
-      database: this.config.get<string>('MYSQL_DATABASE'),
+      type: 'postgres',
+      host: this.config.get<string>('PG_HOST', 'localhost'),
+      port: this.config.get<number>('PG_PORT'),
+      username: this.config.get<string>('PG_USERNAME'),
+      password: this.config.get<string>('PG_PASSWORD'),
+      database: this.config.get<string>('PG_DATABASE'),
       autoLoadEntities: true,
       synchronize: true,
     };
