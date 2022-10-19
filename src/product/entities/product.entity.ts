@@ -1,10 +1,8 @@
-import { Cart } from 'src/cart/entities/cart.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -23,10 +21,13 @@ export class Product {
   @Column()
   price: number;
 
-  @ManyToOne(() => User, (user) => user.products)
-  user: User;
+  @ManyToOne(() => User, (user) => user.products, {
+    onUpdate: 'CASCADE',
+    nullable: false,
+  })
+  @JoinColumn({ referencedColumnName: 'id' })
+  creator: User;
 
-  // @ManyToMany(() => Cart)
-  // @JoinTable()
-  // carts: Cart[];
+  @Column({ nullable: true })
+  creatorId: number;
 }

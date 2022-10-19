@@ -13,7 +13,8 @@ import { User as UserEntity } from '../user/entities/user.entity';
 export enum Action {
   MANAGE_USER = 'manage user',
   MANAGE_PRODUCT = 'manage product',
-  READ = 'read',
+  GET_SINGLE_PRODUCT = 'get single product',
+  READ = 'read information',
 }
 
 export type Subjects = InferSubjects<
@@ -30,13 +31,12 @@ export class AbilityFactory {
     );
 
     if (user.role == 'admin') {
-      can(Action.MANAGE_PRODUCT, Product);
+      can(Action.READ, UserEntity);
       can(Action.MANAGE_USER, UserEntity);
     } else if (user.role == 'seller') {
+      can(Action.READ, UserEntity);
+      can(Action.MANAGE_PRODUCT, Product);
       cannot(Action.MANAGE_USER, UserEntity).because(
-        'You are not authorized to do this',
-      );
-      cannot(Action.MANAGE_PRODUCT, Product).because(
         'You are not authorized to do this',
       );
     } else {

@@ -1,33 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
 import { Cart } from './entities/cart.entity';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class CartService {
   constructor(
     @InjectRepository(Cart)
     private readonly cartReposity: Repository<Cart>,
+
+    @Inject(forwardRef(() => ProductService))
+    private readonly productService: ProductService,
   ) {}
-  create(createCartDto: CreateCartDto) {
-    return this.cartReposity.save(createCartDto);
+  async create() {
+    const cart = new Cart();
+    return this.cartReposity.save(cart);
   }
 
-  createWithoutDto(cart: Cart) {
-    this.cartReposity.save(cart);
+  async addProductIntoCart(cartId: number, listProduct: number[]) {
+    const cart: Cart = await this.cartReposity.findOneBy({ id: cartId });
+    cart.products = await Promise.all(
+      listProduct.map(
+        async (productId) => await this.productService.findOne(productId),
+      ),
+    );
+    return this.cartReposity.save(cart);
   }
 
-  findAll() {
-    return `This action returns all cart`;
+  findAllProductIncart(id: number) {
+    return this.cartReposity.findBy({ id });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} cart`;
+    return this.cartReposity.findOneBy({ id });
   }
 
-  update(id: number, updateCartDto: UpdateCartDto) {
-    return `This action updates a #${id} cart`;
+  async remove(cartId: number, productId: number) {
+    const cart: Cart = await this.cartReposity.findOneBy({ id: cartId });
+    cart.products = cart.products.filter((product) => product.id != productId);
+    return await this.cartReposity.save(cart);
   }
 }

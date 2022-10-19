@@ -19,31 +19,35 @@ import { User as UserEntity } from './entities/user.entity';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
-@CheckAbilities({ action: Action.MANAGE_USER, subject: UserEntity })
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('register')
+  @Post('create-new-user')
+  @CheckAbilities({ action: Action.MANAGE_USER, subject: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);
   }
 
   @Get('get-all-users')
+  @CheckAbilities({ action: Action.MANAGE_USER, subject: UserEntity })
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
+  @CheckAbilities({ action: Action.READ, subject: UserEntity })
   findOne(@Param('id') id: number) {
     return this.userService.findOne(+id);
   }
 
   @Patch(':id')
+  @CheckAbilities({ action: Action.MANAGE_USER, subject: UserEntity })
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
+  @CheckAbilities({ action: Action.MANAGE_USER, subject: UserEntity })
   remove(@Param('id') id: number) {
     return this.userService.remove(+id);
   }

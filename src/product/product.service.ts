@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -17,18 +11,21 @@ export class ProductService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
-  create(createProductDto: CreateProductDto) {
-    return this.productRepository.save(createProductDto);
+  create(createProductDto: CreateProductDto, creatorId: number) {
+    return this.productRepository.save({
+      ...createProductDto,
+      creatorId,
+    });
   }
 
-  findAll() {
-    return this.productRepository.findAndCount({});
+  async findAll(): Promise<Product[]> {
+    return await this.productRepository.find();
   }
 
   async findOne(id: number) {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
-      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found product', HttpStatus.NOT_FOUND);
     }
     return product;
   }
@@ -36,7 +33,7 @@ export class ProductService {
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
-      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found product', HttpStatus.NOT_FOUND);
     }
     await this.productRepository.update({ id }, updateProductDto);
     return {
@@ -47,7 +44,7 @@ export class ProductService {
   async remove(id: number) {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
-      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found product', HttpStatus.NOT_FOUND);
     }
     await this.productRepository.delete({ id });
     return {

@@ -13,7 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { forwardRef } from '@nestjs/common';
 import { CartService } from '../cart/cart.service';
-import { Cart } from '../cart/entities/cart.entity';
+import { InvoiceService } from '../invoice/invoice.service';
 
 @Injectable()
 export class UserService {
@@ -26,6 +26,9 @@ export class UserService {
 
     @Inject(forwardRef(() => CartService))
     private cartService: CartService,
+
+    @Inject(InvoiceService)
+    private readonly invoiceService: InvoiceService,
   ) {}
 
   private logger = new Logger('UserService');
@@ -44,10 +47,8 @@ export class UserService {
       `New user in system with email is: ${createUserDto.email.toLowerCase()}`,
     );
     createUserDto.password = this.helper.encodePassword(createUserDto.password);
-    const cart = new Cart();
-    this.cartService.createWithoutDto(cart);
-    createUserDto.cart = cart;
 
+    createUserDto.cart = await this.cartService.create();
     return this.userRepository.save(createUserDto);
   }
 
@@ -55,8 +56,24 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) {
+      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
+
+  async findOneListedBySeller(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
     if (!user) {
       throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
     }

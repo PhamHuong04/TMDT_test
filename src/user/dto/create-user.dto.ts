@@ -1,8 +1,8 @@
 import { Cart } from '../../cart/entities/cart.entity';
+import { Invoice } from '../../invoice/entities/invoice.entity';
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -20,4 +20,8 @@ export class CreateUserDto {
   @IsObject()
   @IsOptional()
   cart: Cart;
+
+  @IsObject()
+  @IsOptional()
+  invoices: Invoice[];
 }

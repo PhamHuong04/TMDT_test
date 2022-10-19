@@ -1,34 +1,53 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { User } from 'src/common/decorator/user.decorator';
+import { User as UserEntity } from '../user/entities/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('invoice')
+@UseGuards(AuthGuard('jwt'))
+// AbilitiesGuard
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
-  @Post()
-  create(@Body() createInvoiceDto: CreateInvoiceDto) {
-    return this.invoiceService.create(createInvoiceDto);
+  @Post('create-new-invoice')
+  create(@User() user: UserEntity) {
+    return this.invoiceService.create(user);
   }
 
-  @Get()
-  findAll() {
-    return this.invoiceService.findAll();
+  @Get('sales-statistics-by-day/:day')
+  salesStatisticsByDay(
+    @User() user: UserEntity,
+    @Param() created_at: { day: string },
+  ) {
+    return this.invoiceService.salesStatisticsByDay(user.id, created_at.day);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.invoiceService.findOne(+id);
+  @Get('best-selling-product-by-day/:day')
+  getBestSellingProductByDay(
+    @User() user: UserEntity,
+    @Param() created_at: { day: string },
+  ) {
+    return this.invoiceService.getBestSellingProductByDay(
+      user.id,
+      created_at.day,
+    );
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
-    return this.invoiceService.update(+id, updateInvoiceDto);
+  @Get('best-buyer-by-day/:day')
+  getBestBuyerByDay(
+    @User() user: UserEntity,
+    @Param() created_at: { day: string },
+  ) {
+    return this.invoiceService.getBestBuyer(user.id, created_at.day);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.invoiceService.remove(+id);
+  @Get('sales-statistics-by-week')
+  salesStatisticsByWeek(@User() user: UserEntity) {
+    return this.invoiceService.salesStatisticsByWeek(user.id);
+  }
+  @Get('sales-statistics-by-month')
+  salesStatisticsByMonth(@User() user: UserEntity) {
+    return this.invoiceService.salesStatisticsByMonth(user.id);
   }
 }

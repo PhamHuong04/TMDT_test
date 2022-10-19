@@ -1,6 +1,7 @@
 import { Cart } from '../../cart/entities/cart.entity';
 import { Invoice } from '../../invoice/entities/invoice.entity';
 import { Product } from '../../product/entities/product.entity';
+import { UserRole } from '../../common/enum/role.enum';
 import {
   Column,
   Entity,
@@ -9,12 +10,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  CUSTOMER = 'customer',
-  SELLER = 'seller',
-}
 
 @Entity()
 export class User {
@@ -32,19 +27,22 @@ export class User {
     enum: UserRole,
     default: UserRole.CUSTOMER,
   })
-  role: UserRole;
+  role: string;
 
   @OneToOne(() => Cart, {
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-    nullable: true,
+    // onDelete: 'SET NULL',
+    // onUpdate: 'CASCADE',
+    // nullable: true,
+    eager: true,
   })
   @JoinColumn()
   cart: Cart;
 
-  @OneToMany(() => Product, (product) => product.user)
+  @OneToMany(() => Product, (product) => product.creator)
   products: Product[];
 
-  @OneToMany(() => Invoice, (invoice) => invoice.user)
+  @OneToMany(() => Invoice, (invoice) => invoice.user, {
+    nullable: true,
+  })
   invoices: Invoice[];
 }

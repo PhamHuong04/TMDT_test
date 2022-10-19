@@ -10,5 +10,6 @@ import { AbilityModule } from 'src/ability/ability.module';
   imports: [TypeOrmModule.forFeature([Product]), AbilityModule],
   controllers: [ProductController],
   providers: [ProductService],
+  exports: [ProductService],
 })
 export class ProductModule {}
